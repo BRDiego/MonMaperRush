@@ -95,7 +95,7 @@ namespace MonMaperRush
                         Grid_Transferencias.Rows[rowIndex].Cells["date"].Value = transferece.Date.ToString("dd/MM/yyyy");
                         Grid_Transferencias.Rows[rowIndex].Cells["amount"].Value = UIX.FormatMonetary(transferece.Amount);
                         Grid_Transferencias.Rows[rowIndex].Cells["kind"].Value = transferece.TranslateKind(transferece.Kind);
-                        Grid_Transferencias.Rows[rowIndex].Cells["source"].Value = transferece.Source;
+                        Grid_Transferencias.Rows[rowIndex].Cells["source"].Value = transferece.Source.Description;
                         Grid_Transferencias.Rows[rowIndex].Cells["details"].Value = transferece.Details;
                         Grid_Transferencias.Rows[rowIndex].Cells["insertDate"].Value = transferece.CreationDate.ToString("dd/MM/yyyy");
                         Grid_Transferencias.Rows[rowIndex].Cells["updateDate"].Value = transferece.UpdateDate.ToString("dd/MM/yyyy");
@@ -204,7 +204,7 @@ namespace MonMaperRush
                 Txt_DataTransferencia.Text = UIX.DisplayDate(transference.Date);
                 Txt_Valor.Text = UIX.FormatMonetary(transference.Amount);
                 Cmb_Tipo.SelectedIndex = (int)transference.Kind;
-                Txt_Origem.Text = transference.Source;
+                Txt_Origem.Text = transference.Source.Description ;
                 Txt_Detalhes.Text = transference.Details;
             }
             catch (Exception)
@@ -259,11 +259,11 @@ namespace MonMaperRush
                     {
                         Transference transference = new Transference();
 
-                        transference.Id = (int)GenericFunctions.Val(Lbl_IdTransference.Text);
+                        transference.Id = (short)GenericFunctions.Val(Lbl_IdTransference.Text);
                         transference.Date = DateTime.Parse(Txt_DataTransferencia.Text);
                         transference.Amount = GenericFunctions.Val(Txt_Valor.Text);
                         transference.Kind = (TransferenceKind)Cmb_Tipo.SelectedIndex;
-                        transference.Source = Txt_Origem.Text;
+                        transference.Source.Description = Txt_Origem.Text;
                         transference.Details = Txt_Detalhes.Text;
 
                         int result = new TransferenceDAO().Save(transference);

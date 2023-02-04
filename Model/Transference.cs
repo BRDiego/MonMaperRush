@@ -11,14 +11,14 @@ namespace Model
     }
     public class Transference
     {
-        public int Id { get; set; }
+        public short Id { get; set; }
         public DateTime Date { get; set; }
         public decimal Amount { get; set; }
         public TransferenceKind Kind { get; set; }
-        public string Source { get; set; }
         public string Details { get; set; }
         public DateTime CreationDate { get; set; }
         public DateTime UpdateDate { get; set; }
+        public Source Source { get; set; } = new Source();
 
         public Transference()
         {

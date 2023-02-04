@@ -30,8 +30,6 @@ namespace DataAcessLayer
                         .Value = transference.Amount;
                     procedure.Parameters.Add("@KIND", SqlDbType.SmallInt)
                         .Value = (short)transference.Kind;
-                    procedure.Parameters.Add("@SOURCE", SqlDbType.VarChar)
-                        .Value = transference.Source;
                     procedure.Parameters.Add("@DETAILS", SqlDbType.VarChar)
                         .Value = transference.Details;
 
@@ -46,6 +44,13 @@ namespace DataAcessLayer
                         transference.CreationDate = actionMoment;
                     else
                         transference.UpdateDate = actionMoment;
+
+                    var dao = new SourceDAO();
+
+                    transference.Source = dao.Read(transference.Source.Description);
+
+                    procedure.Parameters.Add("@SOURCE", SqlDbType.SmallInt)
+                        .Value = transference.Source.Id;
 
                     procedure.ExecuteNonQuery();
 
@@ -119,10 +124,11 @@ namespace DataAcessLayer
                     {
                         transference = new Transference();
 
-                        transference.Id = int.Parse(reader["TRANSFERENCE"].ToString());
+                        transference.Id = short.Parse(reader["TRANSFERENCE"].ToString());
                         transference.Date = DateTime.Parse(reader["DATE"].ToString());
                         transference.Amount = decimal.Parse(reader["AMOUNT"].ToString());
-                        transference.Source = reader["SOURCE"].ToString();
+                        transference.Source.Id = short.Parse(reader["SOURCE"].ToString());
+                        transference.Source.Description = reader["SOURCE_DESCRIPTION"].ToString();
                         transference.Details = reader["DETAILS"].ToString();
                         transference.CreationDate = DateTime.Parse(reader["CREATION_DATE"].ToString());
                         transference.UpdateDate = reader["UPDATE_DATE"] == DBNull.Value ?
@@ -130,7 +136,6 @@ namespace DataAcessLayer
                                  DateTime.Parse(reader["UPDATE_DATE"].ToString());
 
                         transference.SetKind(short.Parse(reader["KIND"].ToString()));
-
                     }
                     reader.Close();
                 }
@@ -154,10 +159,7 @@ namespace DataAcessLayer
                     SqlCommand procedure = new SqlCommand("TRANSFERENCE_SEARCH", conn);
                     procedure.CommandType = CommandType.StoredProcedure;
 
-                    //procedure.Parameters.Add("@Status", SqlDbType.VarChar).Value = status;
-
                     SqlDataAdapter da = new SqlDataAdapter(procedure);
-
 
                     da.Fill(dTable);
                 }
@@ -170,13 +172,16 @@ namespace DataAcessLayer
                     {
                         Transference transference = new Transference()
                         {
-                            Id = int.Parse(dTable.Rows[i]["TRANSFERENCE"].ToString()),
+                            Id = short.Parse(dTable.Rows[i]["TRANSFERENCE"].ToString()),
                             Date = DateTime.Parse(dTable.Rows[i]["DATE"].ToString()),
                             Amount = decimal.Parse(dTable.Rows[i]["AMOUNT"].ToString()),
-                            Source = dTable.Rows[i]["SOURCE"].ToString(),
+                            //Source = dTable.Rows[i]["SOURCE"].ToString(),
                             Details = dTable.Rows[i]["DETAILS"].ToString(),
                             CreationDate = DateTime.Parse(dTable.Rows[i]["CREATION_DATE"].ToString())
                         };
+
+                        if (dTable.Rows[i]["UPDATE_DATE"] != DBNull.Value)
+                            transference.UpdateDate = DateTime.Parse(dTable.Rows[i]["UPDATE_DATE"].ToString());
 
                         transference.SetKind(short.Parse(dTable.Rows[i]["KIND"].ToString()));
 
